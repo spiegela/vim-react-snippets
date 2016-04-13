@@ -4,6 +4,12 @@ def capscore(t):
 
 def lowerdash(t):
 	return '-'.join([ w.lower() for w in re.findall('[a-z]+|[A-Z]+[a-z]*', t) ])
+
+def specclass(t):
+	return string.split(t, '_', 1)[0]
+
+def specpath(t):
+	return re.match('.*/test/(.+)$', t).group(1)
 endglobal
 
 # Normal javascript snippets
@@ -367,4 +373,31 @@ snippet pt.shr "React PropTypes shape required" w
 PropTypes.shape({
 	$1
 }).isRequired,
+endsnippet
+
+snippet rcs "React class spec exported" b
+import React from 'react';
+import TestUtils from 'react-addons-test-utils';
+import ${1:`!p snip.rv = specclass(snip.basename)`} from '../../src/${2:components}/$1';
+import {expect} from 'chai';
+
+const {renderIntoDocument,
+       scryRenderedDOMComponentsWithTag,
+       Simulate} = TestUtils;
+
+describe('$1', () => {
+  $3
+});
+endsnippet
+
+snippet rit "React Component Chai spec expectation" b
+it('$1', () => {
+$2
+  const component = renderIntoDocument(
+   <${3:`!p snip.rv = specclass(snip.basename)`} $4/>
+  );
+  const ${5:subject} = scryRenderedDOMComponentsWithTag(component$6);
+
+  expect($5$7).to$8;$9
+});
 endsnippet
